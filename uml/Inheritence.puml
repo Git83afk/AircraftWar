@@ -40,12 +40,21 @@ class HeroAircraft {
     - shootNum:int
     - power:int
     - direction:int
-    + HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    - instance:HeroAircraft
+    - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
     + forward():void
     + shoot():List<BaseBullet>
+    + getInstance():HeroAircraft
 }
 
 AbstractAircraft <|-- HeroAircraft
+HeroAircraft <-- HeroAircraft
+note right of HeroAircraft::getInstance
+  private static HeroAircraft instance = new HeroAircraft(...);
+    public static HeroAircraft getInstance(){
+          return instance;
+      }
+end note
 
 class MobEnemy {
     + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
@@ -53,6 +62,34 @@ class MobEnemy {
     + shoot():List<BaseBullet>
 }
 AbstractAircraft <|-- MobEnemy
+
+class EliteEnemy{
+    + EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + forward():void
+    + shoot():List<BaseBullet>
+}
+AbstractAircraft <|-- EliteEnemy
+
+class AdvancedEnemy{
+     + AdvancedEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+     + forward():void
+     + shoot():List<BaseBullet>
+}
+AbstractAircraft <|-- AdvancedEnemy
+
+class HeroEnemy{
+    + HeroEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + forward():void
+    + shoot():List<BaseBullet>
+}
+AbstractAircraft <|-- HeroEnemy
+
+class BossEnemy{
+     + BossEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+     + forward():void
+     + shoot():List<BaseBullet>
+}
+AbstractAircraft <|-- BossEnemy
 
 abstract class BaseBullet
 {
@@ -71,11 +108,43 @@ class EnemyBullet {
     + EnemyBullet(int locationX, int locationY,
      int speedX, int speedY, int power)
 }
-
 BaseBullet <|-- HeroBullet
 BaseBullet <|-- EnemyBullet
 
+abstract class AbstractSupply
+{
+    - Number:int
+    + AbstractSupply(int locationX, int locationY, int speedX, int speedY)
+    +effect():void
+}
+
+class BloodSupply{
+    + BloodSupply(int locationX, int locationY, int speedX, int speedY, int number)
+}
+AbstractSupply <|-- BloodSupply
+
+class FireSupply{
+    + BloodSupply{int locationX, int locationY, int speedX, int seedY, int number)
+}
+AbstractSupply <|-- FireSupply
+
+class FirePlusSupply{
+    + FirePlusSupply(int locationX, int locationY, int speedX, int speedY, int number)
+}
+AbstractSupply <|-- FirePlusSupply
+
+class BombSupply{
+    +BombSupply(int locationX, int locationY, int speedX, int speedY, int number)
+}
+AbstractSupply <|-- BombSupply
+
+class FreezeSupply{
+    +FreezeSupply(int locationX, int locationY, int speedX, int speedY, int number)
+}
+AbstractSupply <|-- FreezeSupply
+
 AbstractFlyingObject <|-- AbstractAircraft
 AbstractFlyingObject <|-- BaseBullet
+AbstractFlyingObject <|-- AbstractSupply
 
 @enduml
