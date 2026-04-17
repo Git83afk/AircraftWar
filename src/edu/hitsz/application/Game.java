@@ -4,10 +4,7 @@ import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.EnemyBullet;
-import supply.AbstractSupply;
-import supply.BloodSupply;
-import supply.FirePlusSupply;
-import supply.FireSupply;
+import supply.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -85,25 +82,48 @@ public class Game extends JPanel {
                     double rand =Math.random();
                     // 产生普通敌机
                     if (enemyAircrafts.size() < enemyMaxNumber && rand > 0.2) {
-                        enemyAircrafts.add(new MobEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                       MobEnemyCreator aircraftFactory = new MobEnemyCreator();
+                        enemyAircrafts.add(aircraftFactory.createEnemy ( (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
                                 0,
                                 10,
-                                30
-                        ));
+                                30)
+
+                        );
                     }
                     // 产生精英敌机
                     if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2){
-                        enemyAircrafts.add(new EliteEnemy(
+                        EliteEnemyCreator aircraftFactory = new EliteEnemyCreator();
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
                                 0,
                                 12,
-                                30
-                        ));
+                                30));
 
                     }
+                    // 产生精锐敌机
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.15) {
+                        AdvancedEnemyCreator aircraftFactory = new AdvancedEnemyCreator();
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                5,
+                                12,
+                                40));
+                    }
+
+                    // 产生王牌敌机
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
+                        HeroEnemyCreator aircraftFactory = new HeroEnemyCreator();
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                7,
+                                12,
+                                45));
+                    }
+
                 }
 
                 // 飞机发射子弹
@@ -215,11 +235,14 @@ private void suppliesMoveAction(){
                             if(Math.random() <= 0.8){
                                double rand_2 = Math.random();
                                if(rand_2 <= 0.5){
-                           supplies.add( new BloodSupply(enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
+                                  SimpleFactory supplyFactory = new SimpleFactory();
+                           supplies.add( supplyFactory.createSupplies("BloodSupply",enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
                                }else if (rand_2 >0.5 && rand_2 <=0.9){
-                                   supplies.add(new FireSupply(enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
+                                   SimpleFactory supplyFactory = new SimpleFactory();
+                                   supplies.add(supplyFactory.createSupplies("FireSupply",enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
                                }else {
-                                   supplies.add(new FirePlusSupply(enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
+                                   SimpleFactory supplyFactory = new SimpleFactory();
+                                   supplies.add(supplyFactory.createSupplies("FirePlusSupply",enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
                                }
 
                             }

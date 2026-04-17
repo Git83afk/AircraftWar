@@ -1,0 +1,39 @@
++@startuml
+'https://plantuml.com/class-diagram
+
+@startuml
+
+
+interface AbstractSupply {
+    + Effect(HeroAircraft hero, List<AbstractAircraft> enemies, List<BaseBullet> bullets)
+}
+
+
+class BloodSupply
+
+class BombSupply
+
+class FireSupply
+
+class FirePlusSupply
+
+class FreezeSupply
+
+class SimpleFactory{
++ createSupplies(String type , locationX , locationY):AbstractSupply
+
+}
+note "switch (type){\ncase 'BloodSupply': \n   return new BloodSupply(locationX , locationY);\ncase 'BombSupply': \n   return new BombSupply(locationX , locationY); \ncase 'FirePlusSupply':\n  return new FirePlusSupply(locationX , locationY); \ncase 'FireSupply':\n   return new FireSupply(locationX , locationY); \ncase 'FreezeSupply': \n  return FreezeSupply(locationX , locationY);}" as N1
+
+SimpleFactory .. N1
+
+AbstractSupply <|.. BloodSupply
+AbstractSupply <|.. BombSupply
+AbstractSupply <|.. FirePlusSupply
+AbstractSupply <|.. FireSupply
+AbstractSupply <|.. FreezeSupply
+AbstractSupply <.. SimpleFactory
+@enduml
+
+
+
