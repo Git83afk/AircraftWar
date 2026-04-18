@@ -81,7 +81,7 @@ public class Game extends JPanel {
                     // 利用随机因子实现普通敌机和精英敌机的随机产生
                     double rand =Math.random();
                     // 产生普通敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand > 100) {
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand < 0.8) {
                        MobEnemyCreator aircraftFactory = new MobEnemyCreator();
                         enemyAircrafts.add(aircraftFactory.createEnemy ( (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
@@ -92,7 +92,7 @@ public class Game extends JPanel {
                         );
                     }
                     // 产生精英敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= -1){
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.5){
                         EliteEnemyCreator aircraftFactory = new EliteEnemyCreator();
                         enemyAircrafts.add(aircraftFactory.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
@@ -103,7 +103,7 @@ public class Game extends JPanel {
 
                     }
                     // 产生精锐敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= -1) {
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2) {
                         AdvancedEnemyCreator aircraftFactory = new AdvancedEnemyCreator();
                         int randomSpeedX = (Math.random() > 0.5) ? 1 : -1;
                         enemyAircrafts.add(aircraftFactory.createEnemy(
@@ -115,7 +115,7 @@ public class Game extends JPanel {
                     }
 
                     // 产生王牌敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 1) {
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
                         HeroEnemyCreator aircraftFactory = new HeroEnemyCreator();
                         int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
                         enemyAircrafts.add(aircraftFactory.createEnemy(

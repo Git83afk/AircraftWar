@@ -10,10 +10,11 @@ import java.util.List;
 public class AdvancedEnemy extends AbstractAircraft {
     public AdvancedEnemy(int locationX, int locationY, int speedX, int speedY, int hp){
         super(locationX, locationY, speedX, speedY, hp);
+
+        //每次射击发射子弹数量
+        this.shootNum = 2;
     }
 
-    //每次射击发射子弹数量
-    private int shootNum = 2;
 
     //子弹威力
     private int power = 30;

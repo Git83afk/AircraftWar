@@ -10,9 +10,6 @@ import java.util.List;
 
 public class EliteEnemy extends AbstractAircraft{
 
-    //每次射击发射子弹数量
-    private int shootNum = 1;
-
     //子弹威力
     private int power = 30;
 
@@ -21,6 +18,8 @@ public class EliteEnemy extends AbstractAircraft{
 
  public EliteEnemy (int locationX, int locationY, int speedX, int speedY, int hp){
      super(locationX, locationY, speedX, speedY, hp);
+     //每次射击发射子弹数量
+     this.shootNum = 1;
  }
     @Override
     public void forward() {
