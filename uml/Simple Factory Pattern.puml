@@ -4,7 +4,7 @@
 @startuml
 
 
-interface AbstractSupply {
+Abstract class AbstractSupply {
     + Effect(HeroAircraft hero, List<AbstractAircraft> enemies, List<BaseBullet> bullets)
 }
 

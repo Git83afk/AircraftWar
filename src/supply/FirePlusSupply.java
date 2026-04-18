@@ -3,6 +3,7 @@ package supply;
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.strategy.RingShoot;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class FirePlusSupply extends AbstractSupply{
 
     @Override
     public void Effect(HeroAircraft hero , List<AbstractAircraft> enemies , List <BaseBullet> bullets) {
-        System.out.println("FirePlusSupply active");
+        hero.setStrategy(new RingShoot());
+        hero.changeShootNum(20);
     }
 }

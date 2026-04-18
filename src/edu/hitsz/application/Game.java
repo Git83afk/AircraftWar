@@ -33,6 +33,12 @@ public class Game extends JPanel {
     private final List<BaseBullet> enemyBullets;
     private final List<AbstractSupply> supplies;
 
+    //Boss 敌机生成阈值
+    private int bossTriggerScore = 500;
+    //Boss 敌机个数(不能超过1）
+    private int bossEnemyCount = 0;
+    // 记录boss出现的代数
+    private  int bossLevel = 1;
     //屏幕中出现的敌机最大数量
     private final int enemyMaxNumber = 5;
 
@@ -92,7 +98,7 @@ public class Game extends JPanel {
                         );
                     }
                     // 产生精英敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.5){
+                   else if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.5){
                         EliteEnemyCreator aircraftFactory = new EliteEnemyCreator();
                         enemyAircrafts.add(aircraftFactory.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
@@ -103,11 +109,11 @@ public class Game extends JPanel {
 
                     }
                     // 产生精锐敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2) {
+                 else  if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2) {
                         AdvancedEnemyCreator aircraftFactory = new AdvancedEnemyCreator();
                         int randomSpeedX = (Math.random() > 0.5) ? 1 : -1;
                         enemyAircrafts.add(aircraftFactory.createEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
                                 randomSpeedX,
                                 12,
@@ -115,15 +121,30 @@ public class Game extends JPanel {
                     }
 
                     // 产生王牌敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
+                 else if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
                         HeroEnemyCreator aircraftFactory = new HeroEnemyCreator();
                         int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
                         enemyAircrafts.add(aircraftFactory.createEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.HERO_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
                                 randomSpeedX,
                                 12,
                                 45));
+                    }
+
+                    //当游戏分数达到一定值时，产生Boss敌机
+
+                  else  if ((score > (bossLevel * bossTriggerScore)) && (bossEnemyCount == 0)){
+                        BossEnemyCreator aircraftFactory = new BossEnemyCreator();
+                        bossEnemyCount = 1;
+                        int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.BOSS_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                randomSpeedX,
+                                0,
+                                100));
+                        bossLevel += 1;
                     }
 
                 }
@@ -289,6 +310,31 @@ private void suppliesMoveAction(){
                                 }else {
                                     SimpleFactory supplyFactory = new SimpleFactory();
                                     supplies.add(supplyFactory.createSupplies("FreezeSupply" ,enemyAircraft.getLocationX(), enemyAircraft.getLocationY() ));
+                                }
+
+                            }
+                        }else if (enemyAircraft instanceof BossEnemy){
+                            score += 80;
+                            bossEnemyCount = 0;
+                            // boss敌机被击落后随机掉落三种道具
+                            for (int i = 0;i < 3 ; i++){
+                                double rand_5 = Math.random();
+                                int offset = (i - 1)*50;
+                                if (rand_5 <= 0.3) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BloodSupply", enemyAircraft.getLocationX()+offset, enemyAircraft.getLocationY()));
+                                } else if (rand_5 > 0.3 && rand_5 <= 0.6) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FireSupply", enemyAircraft.getLocationX()+offset, enemyAircraft.getLocationY()));
+                                } else if(rand_5 > 0.6 && rand_5 <=0.7){
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FirePlusSupply", enemyAircraft.getLocationX()+offset, enemyAircraft.getLocationY()));
+                                }else if(rand_5 >0.7 && rand_5 <= 0.9){
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BombSupply", enemyAircraft.getLocationX()+offset, enemyAircraft.getLocationY()));
+                                }else {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FreezeSupply" ,enemyAircraft.getLocationX()+offset, enemyAircraft.getLocationY() ));
                                 }
 
                             }

@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface Enemy{
+Abstract class AbstractAircraft{
  + crash(AbstractFlyingObject flyingObject):boolean
     + setLocation(double locationX, double locationY):void
     + getLocationX():int
@@ -14,7 +14,7 @@ interface Enemy{
     + vanish():void
 
 }
-abstract class EnemyCreator{
+Interface EnemyCreator{
 + createEnemy(int LocationX , int LocationY , int speedX , int speedY , int hp):AbstractAircraft
 
 }
@@ -42,12 +42,12 @@ class BossEnemyCreator{
 
 note bottom of EliteEnemyCreator : return new EliteEnemy(int LocationX , int LocationY , int speedX , int speedY , int hp)
 
-EnemyCreator ..> Enemy
-MobEnemy ..|> Enemy
-EliteEnemy ..|> Enemy
-AdvancedEnemy ..|> Enemy
-HeroEnemy ..|> Enemy
-BossEnemy ..|> Enemy
+EnemyCreator ..> AbstractAircraft
+MobEnemy ..|> AbstractAircraft
+EliteEnemy ..|> AbstractAircraft
+AdvancedEnemy ..|> AbstractAircraft
+HeroEnemy ..|> AbstractAircraft
+BossEnemy ..|> AbstractAircraft
 
 MobEnemyCreator --|> EnemyCreator
 EliteEnemyCreator --|> EnemyCreator

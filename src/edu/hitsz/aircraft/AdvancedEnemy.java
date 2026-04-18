@@ -3,6 +3,7 @@ package edu.hitsz.aircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
+import edu.hitsz.strategy.StraightShoot;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,14 +14,17 @@ public class AdvancedEnemy extends AbstractAircraft {
 
         //每次射击发射子弹数量
         this.shootNum = 2;
+        //子弹威力
+        this.power = 10;
+
+        //子弹射击方向 (向上发射：-1，向下发射：1)
+        this.direction = 1;
+
+        this.setStrategy(new StraightShoot());
     }
 
 
-    //子弹威力
-    private int power = 30;
 
-    //子弹射击方向 (向上发射：-1，向下发射：1)
-    private int direction = 1;
 
     @Override
     public void forward() {
@@ -31,21 +35,6 @@ public class AdvancedEnemy extends AbstractAircraft {
         }
     }
 
-    @Override
-    public List<BaseBullet> shoot() {
-        List<BaseBullet> res = new LinkedList<>();
-        int x = this.getLocationX();
-        int y = this.getLocationY() + direction*2;
-        int speedX = 0;
-        int speedY = this.getSpeedY() + direction*5;
-        BaseBullet bullet;
-        for(int i=0; i<shootNum; i++){
-            // 子弹发射位置相对飞机位置向前偏移
-            // 多个子弹横向分散
-            bullet = new EnemyBullet(x + (i*2 - shootNum + 1)*10, y, speedX, speedY, power);
-            res.add(bullet);
-        }
-        return res;
-    }
+
 
 }
