@@ -13,7 +13,7 @@ public class AdvancedEnemy extends AbstractAircraft {
     }
 
     //每次射击发射子弹数量
-    private int shootNum = 1;
+    private int shootNum = 2;
 
     //子弹威力
     private int power = 30;

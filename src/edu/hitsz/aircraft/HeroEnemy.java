@@ -40,7 +40,7 @@ public class HeroEnemy extends AbstractAircraft{
         for(int i=0; i<shootNum; i++){
             // 子弹发射位置相对飞机位置向前偏移
             // 多个子弹横向分散
-            int speedX = i-1;
+            int speedX = (i-1)*2;
             bullet = new EnemyBullet(x + (i*2 - shootNum + 1)*10, y, speedX, speedY, power);
             res.add(bullet);
         }

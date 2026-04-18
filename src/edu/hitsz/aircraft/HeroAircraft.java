@@ -23,7 +23,7 @@ public class HeroAircraft extends AbstractAircraft {
     //子弹射击方向 (向上发射：-1，向下发射：1)
     private int direction = -1;
 
-    private static HeroAircraft instance = new HeroAircraft(Main.WINDOW_WIDTH / 2 ,Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight(),0,0,100);
+    private static HeroAircraft instance = new HeroAircraft(Main.WINDOW_WIDTH / 2 ,Main.WINDOW_HEIGHT - ImageManager.HERO_IMAGE.getHeight(),0,0,1000000);
 
     private HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);

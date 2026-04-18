@@ -81,7 +81,7 @@ public class Game extends JPanel {
                     // 利用随机因子实现普通敌机和精英敌机的随机产生
                     double rand =Math.random();
                     // 产生普通敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand > 0.2) {
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand > 100) {
                        MobEnemyCreator aircraftFactory = new MobEnemyCreator();
                         enemyAircrafts.add(aircraftFactory.createEnemy ( (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
@@ -92,7 +92,7 @@ public class Game extends JPanel {
                         );
                     }
                     // 产生精英敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2){
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= -1){
                         EliteEnemyCreator aircraftFactory = new EliteEnemyCreator();
                         enemyAircrafts.add(aircraftFactory.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
@@ -103,23 +103,25 @@ public class Game extends JPanel {
 
                     }
                     // 产生精锐敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.15) {
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= -1) {
                         AdvancedEnemyCreator aircraftFactory = new AdvancedEnemyCreator();
+                        int randomSpeedX = (Math.random() > 0.5) ? 1 : -1;
                         enemyAircrafts.add(aircraftFactory.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                5,
+                                randomSpeedX,
                                 12,
                                 40));
                     }
 
                     // 产生王牌敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 1) {
                         HeroEnemyCreator aircraftFactory = new HeroEnemyCreator();
+                        int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
                         enemyAircrafts.add(aircraftFactory.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                7,
+                                randomSpeedX,
                                 12,
                                 45));
                     }
@@ -228,25 +230,71 @@ private void suppliesMoveAction(){
                         // 获得分数，产生道具补给
                         if (enemyAircraft instanceof MobEnemy) {
                             score += 10;
-                        }else if (enemyAircraft instanceof  EliteEnemy){
+                        }else if (enemyAircraft instanceof  EliteEnemy) {
                             score += 20;
 
-                            // 有80%的概率掉落道具
-                            if(Math.random() <= 0.8){
-                               double rand_2 = Math.random();
-                               if(rand_2 <= 0.5){
-                                  SimpleFactory supplyFactory = new SimpleFactory();
-                           supplies.add( supplyFactory.createSupplies("BloodSupply",enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
-                               }else if (rand_2 >0.5 && rand_2 <=0.9){
-                                   SimpleFactory supplyFactory = new SimpleFactory();
-                                   supplies.add(supplyFactory.createSupplies("FireSupply",enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
-                               }else {
-                                   SimpleFactory supplyFactory = new SimpleFactory();
-                                   supplies.add(supplyFactory.createSupplies("FirePlusSupply",enemyAircraft.getLocationX(),enemyAircraft.getLocationY()));
-                               }
+                            // 精锐敌机被击落后有80%的概率掉落道具
+                            if (Math.random() <= 0.8) {
+                                double rand_2 = Math.random();
+                                if (rand_2 <= 0.5) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BloodSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                } else if (rand_2 > 0.5 && rand_2 <= 0.9) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FireSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                } else {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FirePlusSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                }
+
+                            }
+
+                        } else if (enemyAircraft instanceof AdvancedEnemy){
+                            score += 30;
+                            // 精英敌机被击落后有90%的概率掉落道具
+                            if (Math.random() <= 0.9){
+                                double rand_3 = Math.random();
+                                if (rand_3 <= 0.4) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BloodSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                } else if (rand_3 > 0.4 && rand_3 <= 0.7) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FireSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                } else if(rand_3 > 0.7 && rand_3 <=0.9){
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FirePlusSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                }else {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BombSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                }
+
+                            }
+                        }else if (enemyAircraft instanceof HeroEnemy){
+                            score += 40;
+                            // 精英敌机被击落后有95%的概率掉落道具
+                            if (Math.random() <= 0.95){
+                                double rand_4 = Math.random();
+                                if (rand_4 <= 0.3) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BloodSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                } else if (rand_4 > 0.3 && rand_4 <= 0.6) {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FireSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                } else if(rand_4 > 0.6 && rand_4 <=0.7){
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FirePlusSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                }else if(rand_4 >0.7 && rand_4<= 0.9){
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("BombSupply", enemyAircraft.getLocationX(), enemyAircraft.getLocationY()));
+                                }else {
+                                    SimpleFactory supplyFactory = new SimpleFactory();
+                                    supplies.add(supplyFactory.createSupplies("FreezeSupply" ,enemyAircraft.getLocationX(), enemyAircraft.getLocationY() ));
+                                }
 
                             }
                         }
+
+
                     }
                 }
                 // 英雄机 与 敌机 相撞，均损毁
