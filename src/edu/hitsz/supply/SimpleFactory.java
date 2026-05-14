@@ -1,4 +1,4 @@
-package supply;
+package edu.hitsz.supply;
 
 public class SimpleFactory {
     public static AbstractSupply createSupplies(String type,int LocationX , int LocationY){
@@ -14,7 +14,7 @@ public class SimpleFactory {
             case "FreezeSupply":
                 return  new FreezeSupply(LocationX , LocationY);
             default:
-                throw new IllegalArgumentException("Unkown supply type!");
+                throw new IllegalArgumentException("Unkown edu.hitsz.supply type!");
         }
     }
 }

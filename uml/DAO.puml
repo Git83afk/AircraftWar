@@ -1,27 +1,33 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+interface GradeDAO{
++getAllGrades():List<Grade>
++doAdd(Grade grade):void
++doDelete(String playerName , String time):void
++findGrade(String playerName):List<Grade>
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+Class GradeDaoImpl {
+- grades: List<Grade>
++getAllGrades():List<Grade>
++doAdd(Grade grade):void
++doDelete(String playerName , String time):void
++findGrade(String playerName):List<Grade>
+
 }
 
+Class Grade {
+-playerName:String
+-Time:String
+-Score:int
++Grade(String playerName) , String time , int Score)
++getPlayerName():String
++getTime():String
++getScore():int
+}
+
+GradeDaoImpl ..|> GradeDAO
+GradeDaoImpl --> Grade
 @enduml

@@ -1,4 +1,4 @@
-package supply;
+package edu.hitsz.supply;
 
 import edu.hitsz.aircraft.AbstractAircraft;
 import edu.hitsz.aircraft.HeroAircraft;

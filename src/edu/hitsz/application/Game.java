@@ -3,8 +3,9 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
-import edu.hitsz.bullet.EnemyBullet;
-import supply.*;
+import edu.hitsz.dao.Grade;
+import edu.hitsz.dao.GradeDaoImpl;
+import edu.hitsz.supply.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +13,8 @@ import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 import java.util.Timer;
-import java.util.concurrent.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 游戏主面板，游戏启动
@@ -53,8 +55,16 @@ public class Game extends JPanel {
     //当前玩家分数
     private int score = 0;
 
+    //当前玩家名称
+    private String playerName = "testPlayerName";
+
     //游戏结束标志
     private boolean gameOverFlag = false;
+
+    //三种难度的数据文件
+    String easyPath = "D:/AircraftWar-base1.0/easy.txt";
+    String commonPath = "D:/AircraftWar-base1.0/common.txt";
+    String difficultPath = "D:/AircraftWar-base1.0/difficult.txt";
 
     public Game() {
         heroAircraft = HeroAircraft.getInstance();
@@ -84,57 +94,9 @@ public class Game extends JPanel {
                 enemySpawnCounter++;
                 if (enemySpawnCounter >=enemySpawnCycle) {
                     enemySpawnCounter = 0;
-                    // 利用随机因子实现普通敌机和精英敌机的随机产生
-                    double rand =Math.random();
-                    // 产生普通敌机
-                    if (enemyAircrafts.size() < enemyMaxNumber && rand < 0.8) {
-                       MobEnemyCreator aircraftFactory = new MobEnemyCreator();
-                        enemyAircrafts.add(aircraftFactory.createEnemy ( (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                0,
-                                10,
-                                30)
-
-                        );
-                    }
-                    // 产生精英敌机
-                   else if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.5){
-                        EliteEnemyCreator aircraftFactory = new EliteEnemyCreator();
-                        enemyAircrafts.add(aircraftFactory.createEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                0,
-                                12,
-                                30));
-
-                    }
-                    // 产生精锐敌机
-                 else  if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2) {
-                        AdvancedEnemyCreator aircraftFactory = new AdvancedEnemyCreator();
-                        int randomSpeedX = (Math.random() > 0.5) ? 1 : -1;
-                        enemyAircrafts.add(aircraftFactory.createEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                randomSpeedX,
-                                12,
-                                40));
-                    }
-
-                    // 产生王牌敌机
-                 else if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
-                        HeroEnemyCreator aircraftFactory = new HeroEnemyCreator();
-                        int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
-                        enemyAircrafts.add(aircraftFactory.createEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.HERO_ENEMY_IMAGE.getWidth())),
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
-                                randomSpeedX,
-                                12,
-                                45));
-                    }
 
                     //当游戏分数达到一定值时，产生Boss敌机
-
-                  else  if ((score > (bossLevel * bossTriggerScore)) && (bossEnemyCount == 0)){
+                    if ((score > (bossLevel * bossTriggerScore)) && (bossEnemyCount == 0)){
                         BossEnemyCreator aircraftFactory = new BossEnemyCreator();
                         bossEnemyCount = 1;
                         int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
@@ -146,6 +108,56 @@ public class Game extends JPanel {
                                 100));
                         bossLevel += 1;
                     }
+
+                    // 利用随机因子实现敌机的随机产生
+                    double rand =Math.random();
+                    // 产生王牌敌机
+                    if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.1) {
+                        HeroEnemyCreator aircraftFactory = new HeroEnemyCreator();
+                        int randomSpeedX = (Math.random() > 0.5) ? 2 : -2;
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.HERO_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                randomSpeedX,
+                                12,
+                                45));
+                    }
+                    // 产生精锐敌机
+                    else  if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.2) {
+                        AdvancedEnemyCreator aircraftFactory = new AdvancedEnemyCreator();
+                        int randomSpeedX = (Math.random() > 0.5) ? 1 : -1;
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                randomSpeedX,
+                                12,
+                                40));
+                    }
+                    // 产生精英敌机
+                    else if (enemyAircrafts.size() < enemyMaxNumber && rand <= 0.5){
+                        EliteEnemyCreator aircraftFactory = new EliteEnemyCreator();
+                        enemyAircrafts.add(aircraftFactory.createEnemy(
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                0,
+                                12,
+                                30));
+
+                    }
+
+                    // 产生普通敌机
+                 else  if (enemyAircrafts.size() < enemyMaxNumber && rand < 0.8) {
+                       MobEnemyCreator aircraftFactory = new MobEnemyCreator();
+                        enemyAircrafts.add(aircraftFactory.createEnemy ( (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.05),
+                                0,
+                                10,
+                                30)
+
+                        );
+                    }
+
+
 
                 }
 
@@ -165,6 +177,7 @@ public class Game extends JPanel {
                 repaint();
                 // 游戏结束检查
                 checkResultAction();
+
             }
         };
         // 以固定延迟时间进行执行：本次任务执行完成后，延迟 timeInterval 再执行下一次
@@ -383,12 +396,38 @@ private void suppliesMoveAction(){
      */
     private void checkResultAction(){
         // 游戏结束检查英雄机是否存活
-        if (heroAircraft.getHp() <= 0) {
+        if (heroAircraft.getHp() <= 0 && !gameOverFlag) {
             timer.cancel(); // 取消定时器并终止所有调度任务
             gameOverFlag = true;
             System.out.println("Game Over!");
+            Main.cardLayout.show(Main.cardPanel, "SCORE_UI");
+            String inputName = JOptionPane.showInputDialog(this, "游戏结束，你的得分为 " + score + "。\n请输入玩家名字：");
+            if (inputName != null && !inputName.trim().isEmpty()) {
+                this.playerName = inputName;
+            } else {
+                this.playerName = "Anonymous"; // 如果用户不输入或者点取消，给个默认名
+            }
+            // 写入并且打印排行榜
+            saveScoreToFile(easyPath,score,playerName);
         }
     };
+
+    /**
+     在游戏结束后，打印属于该难度的排行榜
+     */
+    private void saveScoreToFile(String path , int score ,String playerName){
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String time = now.format(formatter);
+        Grade grade = new Grade(playerName ,time,score);
+        GradeDaoImpl gradeDaoImpl = new GradeDaoImpl(path);
+        gradeDaoImpl.doAdd(grade);
+        List<Grade> grades = new LinkedList<>();
+        grades = gradeDaoImpl.getAllGrades();
+        gradeDaoImpl.outGrade(grades);
+
+    }
 
     //***********************
     //      Paint 各部分
