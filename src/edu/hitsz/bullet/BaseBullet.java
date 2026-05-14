@@ -1,13 +1,15 @@
 package edu.hitsz.bullet;
 
+import edu.hitsz.aircraft.Observer;
 import edu.hitsz.application.Main;
 import edu.hitsz.basic.AbstractFlyingObject;
+import edu.hitsz.supply.AbstractSupply;
 
 /**
  * 子弹基类
  * @author hitsz
  */
-public abstract class BaseBullet extends AbstractFlyingObject {
+public abstract class BaseBullet extends AbstractFlyingObject implements Observer {
 
     private int power = 0;
 
@@ -37,5 +39,10 @@ public abstract class BaseBullet extends AbstractFlyingObject {
 
     public int getPower() {
         return power;
+    }
+
+    @Override
+    public void update(AbstractSupply supply){
+
     }
 }

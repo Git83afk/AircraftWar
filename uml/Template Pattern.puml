@@ -1,0 +1,58 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Game{
+    +action();
+    +createEnemy();
+    +shootAction();
+    +bulletsMoveAction();
+    +aircraftsMoveAction();
+    +suppliesMoveAction();
+    +crashCheckAction();
+    +postProcessAction();
+    +repaint();
+    +checkResultAction();
+}
+note left : switch(case)：\n Easy:EasyMode mode =new EasyMode();\n Common: CommonMode = new CommonMode(); \n Difficult:DifficultMode = new DifficultMode();
+class EasyMode{
+    +createEnemy();
+    +shootAction();
+    +bulletsMoveAction();
+    +aircraftsMoveAction();
+    +suppliesMoveAction();
+    +crashCheckAction();
+    +postProcessAction();
+    +repaint();
+    +checkResultAction();
+}
+
+class CommonMode{
+    +createEnemy();
+    +shootAction();
+    +bulletsMoveAction();
+    +aircraftsMoveAction();
+    +suppliesMoveAction();
+    +crashCheckAction();
+    +postProcessAction();
+    +repaint();
+    +checkResultAction();
+
+}
+
+class DifficultMode{
+    +createEnemy();
+    +shootAction();
+    +bulletsMoveAction();
+    +aircraftsMoveAction();
+    +suppliesMoveAction();
+    +crashCheckAction();
+    +postProcessAction();
+    +repaint();
+    +checkResultAction();
+
+}
+
+EasyMode --|>Game
+CommonMode --|>Game
+DifficultMode --|>Game
+@enduml

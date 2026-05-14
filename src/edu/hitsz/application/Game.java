@@ -52,6 +52,11 @@ public class Game extends JPanel {
     protected double shootCycle = 20;
     private int shootCounter = 0;
 
+    // 当前难度对应的背景图和文件路径
+    private BufferedImage backgroundImage;
+    private int difficulty;
+    private String currentScorePath;
+
     //当前玩家分数
     private int score = 0;
 
@@ -65,15 +70,43 @@ public class Game extends JPanel {
     String easyPath = "D:/AircraftWar-base1.0/easy.txt";
     String commonPath = "D:/AircraftWar-base1.0/common.txt";
     String difficultPath = "D:/AircraftWar-base1.0/difficult.txt";
+    // 音频表示
+    private MusicThread bgmThread;
+    private MusicThread bossBgmThread;
 
-    public Game() {
+    public Game(int difficulty) {
+
+        this.difficulty = difficulty;
+
+
+        switch (difficulty) {
+            case 1: // 简单
+                this.backgroundImage = ImageManager.BACKGROUND_IMAGE_EASY;
+                this.currentScorePath = easyPath;
+                break;
+            case 2: // 普通
+                this.backgroundImage = ImageManager.BACKGROUND_IMAGE_NORMAL;
+                this.currentScorePath = commonPath;
+                break;
+            case 3: // 困难
+                this.backgroundImage = ImageManager.BACKGROUND_IMAGE_HARD;
+                this.currentScorePath = difficultPath;
+                break;
+            default:
+                this.backgroundImage = ImageManager.BACKGROUND_IMAGE_EASY;
+                this.currentScorePath = easyPath;
+        }
+
+
         heroAircraft = HeroAircraft.getInstance();
 
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         supplies = new LinkedList<>();
-
+        //播放背景音乐
+        bgmThread = new MusicThread("src/videos/bgm.wav",true);
+        bgmThread.start();
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
 
@@ -107,6 +140,9 @@ public class Game extends JPanel {
                                 0,
                                 100));
                         bossLevel += 1;
+                        //播放 Boss 专属BGM
+                        bossBgmThread = new MusicThread("src/videos/bgm_boss.wav",true);
+                        bossBgmThread.start();
                     }
 
                     // 利用随机因子实现敌机的随机产生
@@ -260,6 +296,7 @@ private void suppliesMoveAction(){
                     // 敌机损失一定生命值
                     enemyAircraft.decreaseHp(bullet.getPower());
                     bullet.vanish();
+                    new MusicThread("src/videos/bullet_hit.wav",false).start();
                     if (enemyAircraft.notValid()) {
                         // 获得分数，产生道具补给
                         if (enemyAircraft instanceof MobEnemy) {
@@ -329,6 +366,10 @@ private void suppliesMoveAction(){
                         }else if (enemyAircraft instanceof BossEnemy){
                             score += 80;
                             bossEnemyCount = 0;
+                            //停止 Boss BGM
+                            if (bossBgmThread != null){
+                                bossBgmThread.setStop();
+                            }
                             // boss敌机被击落后随机掉落三种道具
                             for (int i = 0;i < 3 ; i++){
                                 double rand_5 = Math.random();
@@ -368,7 +409,27 @@ private void suppliesMoveAction(){
         for (AbstractSupply supply : supplies ){
 
             if (heroAircraft.crash(supply)){
-               supply.Effect(heroAircraft,enemyAircrafts,enemyBullets);
+                new MusicThread("src/videos/get_supply.wav",false).start();
+               // 炸弹道具计算逻辑
+                if (supply instanceof  BombSupply){
+                    for (AbstractAircraft enemy : enemyAircrafts){
+                        if(!enemy.notValid()) {
+                           if (enemy instanceof MobEnemy){
+                               score += 10;}
+                        else if (enemy instanceof EliteEnemy) {
+                                score += 20;
+                            } else if (enemy instanceof AdvancedEnemy) {
+                                score += 30;
+                            }else if (enemy instanceof  HeroEnemy){
+                             if (enemy.getHp() <= 30){
+                                 score += 40;
+                             }
+                           }
+                        }
+                    }
+
+                }
+                supply.Effect(heroAircraft,enemyAircrafts,enemyBullets);
                supply.vanish();
                 }
         }
@@ -400,6 +461,10 @@ private void suppliesMoveAction(){
             timer.cancel(); // 取消定时器并终止所有调度任务
             gameOverFlag = true;
             System.out.println("Game Over!");
+            //停止所有背景音乐，播放游戏结束音效
+            if (bgmThread != null) bgmThread.setStop();
+            if (bossBgmThread != null) bossBgmThread.setStop();
+            new MusicThread("src/videos/game_over.wav",false).start();
             Main.cardLayout.show(Main.cardPanel, "SCORE_UI");
             String inputName = JOptionPane.showInputDialog(this, "游戏结束，你的得分为 " + score + "。\n请输入玩家名字：");
             if (inputName != null && !inputName.trim().isEmpty()) {
@@ -407,8 +472,12 @@ private void suppliesMoveAction(){
             } else {
                 this.playerName = "Anonymous"; // 如果用户不输入或者点取消，给个默认名
             }
-            // 写入并且打印排行榜
-            saveScoreToFile(easyPath,score,playerName);
+
+            // 使用当前难度的路径保存分数
+            saveScoreToFile(currentScorePath, score, playerName);
+            //通知 ScoreUI 读取最新文件数据并刷新表格，然后再跳转界面
+            Main.scoreUI.loadScoreData(currentScorePath, difficulty);
+            Main.cardLayout.show(Main.cardPanel, "SCORE_UI");
         }
     };
 
@@ -441,8 +510,8 @@ private void suppliesMoveAction(){
         super.paint(g);
 
         // 绘制背景,图片滚动
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
+        g.drawImage(this.backgroundImage, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
+        g.drawImage(this.backgroundImage, 0, this.backGroundTop, null);
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
             this.backGroundTop = 0;

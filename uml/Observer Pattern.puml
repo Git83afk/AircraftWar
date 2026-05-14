@@ -1,0 +1,65 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+Abstract class AbstractSupply {
+    - enemies：List<AbstractAircraft>
+    + Effect(HeroAircraft hero, List<AbstractAircraft> enemies, List<BaseBullet> bullets)
+    + notifyenemies():void
+}
+
+class BloodSupply
+
+class BombSupply
+{
+     + Effect(HeroAircraft hero, List<AbstractAircraft> enemies, List<BaseBullet> bullets)
+     + notifyenemies():void
+}
+note left:(foreach enemy in enemies ，enemy.update)
+class FireSupply
+
+class FirePlusSupply
+
+class FreezeSupply
+{
+  + Effect(HeroAircraft hero, List<AbstractAircraft> enemies, List<BaseBullet> bullets)
+  + notifyenemies():void
+}
+
+AbstractSupply <|-- BloodSupply
+AbstractSupply <|-- BombSupply
+AbstractSupply <|-- FirePlusSupply
+AbstractSupply <|-- FireSupply
+AbstractSupply <|-- FreezeSupply
+
+Interface Observer{
++ update(AbstractSupply supply)
+}
+
+class MobEnemy{
+    + update(AbstractSupply supply)
+}
+
+class EliteEnemy{
+    + update(AbstractSupply supply)
+}
+
+class AdvancedEnemy{
++ update(AbstractSupply supply)
+}
+
+class HeroEnemy{
++ update(AbstractSupply supply)
+}
+
+class BossEnemy{
++ update(AbstractSupply supply)
+}
+
+Observer <|..MobEnemy
+Observer <|..EliteEnemy
+Observer <|..AdvancedEnemy
+Observer <|..HeroEnemy
+Observer <|..BossEnemy
+
+AbstractSupply o-- Observer
+@enduml

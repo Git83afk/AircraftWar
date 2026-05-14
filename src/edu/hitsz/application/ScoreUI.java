@@ -1,14 +1,16 @@
 package edu.hitsz.application;
-
+import edu.hitsz.dao.Grade;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import edu.hitsz.dao.GradeDaoImpl;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 public class ScoreUI {
     private JPanel mainPanel;
@@ -19,30 +21,42 @@ public class ScoreUI {
     private JLabel easyButton;
     private DefaultTableModel model;
 
+    private GradeDaoImpl currentDao;
+
     // 构造函数开始
     public ScoreUI() {
         // 1. 初始化表格列名
         String[] columnName = {"名次", "玩家名", "得分", "记录时间"};
 
-        // 2. 暂时使用测试数据
-        String[][] tableData = {
-                {"1", "test", "100", "04-11 10:11"},
-                {"2", "player", "50", "04-12 11:22"}
-        };
-
-        // 3. 配置表格模型 (注意这里大括号的闭合)
-        model = new DefaultTableModel(tableData, columnName) {
+        model = new DefaultTableModel(null, columnName) {
             @Override
             public boolean isCellEditable(int row, int col) {
                 return false; // 设置单元格不可编辑
             }
         };
 
-        // 这两句执行语句必须安安稳稳地呆在构造函数内部！
+
         scoreTable.setModel(model);
         tableScrollPanel.setViewportView(scoreTable);
 
-        // 4. 删除按钮事件逻辑
+        // 获取表格的列模型
+        javax.swing.table.TableColumnModel columnModel = scoreTable.getColumnModel();
+
+        // 设置“名次”列宽度（较窄）
+        columnModel.getColumn(0).setPreferredWidth(40);
+        columnModel.getColumn(0).setMaxWidth(60);
+
+        // 设置“玩家名”列宽度
+        columnModel.getColumn(1).setPreferredWidth(100);
+
+        // 设置“得分”列宽度
+        columnModel.getColumn(2).setPreferredWidth(80);
+
+        // 设置“记录时间”列宽度
+        columnModel.getColumn(3).setPreferredWidth(200);
+        columnModel.getColumn(3).setMinWidth(150); // 设置最小宽度，防止被挤压
+
+        // 2.删除按钮事件逻辑
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -50,6 +64,12 @@ public class ScoreUI {
                 if (row != -1) {
                     int result = JOptionPane.showConfirmDialog(deleteButton, "是否确定删除?");
                     if (JOptionPane.YES_OPTION == result) {
+                        String playerName = (String) model.getValueAt(row,1);
+                        String time = (String) model.getValueAt(row,3);
+                        //调用  DAO 删除文件中的持久化数据
+                        if (currentDao != null){
+                            currentDao.doDelete(playerName,time);
+                        }
                         model.removeRow(row);
                     }
                 } else {
@@ -58,6 +78,33 @@ public class ScoreUI {
             }
         });
     } // 构造函数结束
+
+    public void loadScoreData(String filePath, int difficulty){
+        this.currentDao = new GradeDaoImpl(filePath);
+        // 2. 更改左上角难度提示 Label (你在 UI 里的变量名是 easyButton)
+        String diffText = "EASY";
+        if (difficulty == 2) diffText = "NORMAL";
+        if (difficulty == 3) diffText = "HARD";
+        easyButton.setText("当前难度：" + diffText);
+
+        // 3. 利用 DAO 取出数据并按分数排序
+        List<Grade> grades = currentDao.getAllGrades();
+        grades.sort((g1, g2) -> Integer.compare(g2.getScore(), g1.getScore()));
+
+        // 4. 清空旧数据
+        model.setRowCount(0);
+
+        // 5. 遍历填入新数据
+        for (int i = 0; i < grades.size(); i++) {
+            Grade g = grades.get(i);
+            model.addRow(new Object[]{
+                    i + 1,              // 名次
+                    g.getPlayerName(),  // 玩家名
+                    g.getScore(),       // 得分
+                    g.getTime()         // 记录时间
+            });
+        }
+    }
 
     // 弹窗输入姓名的方法
     public void showInputNameDialog(int score) {

@@ -4,11 +4,12 @@ import edu.hitsz.application.Main;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
 import edu.hitsz.strategy.ScatteringShoot;
+import edu.hitsz.supply.AbstractSupply;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class HeroEnemy extends AbstractAircraft{
+public class HeroEnemy extends AbstractAircraft implements Observer{
 
     public HeroEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
@@ -34,5 +35,22 @@ public class HeroEnemy extends AbstractAircraft{
             vanish();
         }
     }
-
+    @Override
+    public void update(AbstractSupply supply){
+        if (supply instanceof edu.hitsz.supply.BombSupply) {
+            this.decreaseHp(30); // 扣除一定血量
+        } else if (supply instanceof edu.hitsz.supply.FreezeSupply) {
+            int originalSpeedX = this.speedX;
+            int originalSpeedY = this.speedY;
+            this.speedX = this.speedX / 2; // 速度减半
+            this.speedY = this.speedY / 2;
+            new java.util.Timer().schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    speedX = originalSpeedX;
+                    speedY = originalSpeedY;
+                }
+            }, 5000);
+        }
+    }
 }

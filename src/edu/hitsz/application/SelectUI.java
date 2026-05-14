@@ -44,7 +44,7 @@ public class SelectUI {
         // 先打印一下测试点击是否成功
         System.out.println("选择了难度: " + difficulty);
 
-        Game game = new Game();
+        Game game = new Game(difficulty);
         Main.cardPanel.add(game, "GAME");
         Main.cardLayout.show(Main.cardPanel, "GAME");
         game.action();

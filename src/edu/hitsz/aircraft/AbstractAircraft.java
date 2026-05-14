@@ -3,6 +3,7 @@ package edu.hitsz.aircraft;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.strategy.ShootStrategy;
+import edu.hitsz.supply.AbstractSupply;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * 所有种类飞机的抽象父类
  * @author hitsz
  */
-public abstract class AbstractAircraft extends AbstractFlyingObject {
+public abstract class AbstractAircraft extends AbstractFlyingObject implements Observer{
 
     //最大生命值
     protected int maxHp;
@@ -50,6 +51,10 @@ public abstract class AbstractAircraft extends AbstractFlyingObject {
         this.strategy = strategy;
     }
 
+    @Override
+    public void update(AbstractSupply supply){
+
+    }
     /**
      * 飞机射击方法
      * @return
